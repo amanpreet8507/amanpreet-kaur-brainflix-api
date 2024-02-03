@@ -10,6 +10,34 @@ router.route("/")
         res.status(200).json(videosData)
     })
 
+    // post video
+    .post((req, res)=>{
+        const {title, image, description} = req.body;
+
+        if(!title || !description || !image) return res.status(400).json("Please input all video details!")
+
+        // new video object
+        const newVideo = {
+            id: uuidv4(),
+            title,
+            channel:"channel",
+            image,
+            description,
+            views: 0,
+            likes: 0,
+            duration:0,
+            video: "video",
+            timestamp: Date.now(),
+            comments:[]
+        }
+        const videosList = JSON.parse(fs.readFileSync("./data/videos.json"))
+        videosList.push(newVideo)
+
+        fs.writeFileSync("./data/videos.json", JSON.stringify(videosList))
+        res.status(201).json("video uploaded!")
+    })
+
+
 // get video by id
 router.route("/:id")
     .get((req, res) => {
@@ -19,8 +47,6 @@ router.route("/:id")
 
         if(!videoMatch) return res.status(404).json("No videos found!");
     })
-// post video
-
 
 // post comments               
 router.route("/:id/comments")
@@ -30,6 +56,7 @@ router.route("/:id/comments")
         if(!name || !comment) return res.status(400).json("Plese input comment")
 
         const videoId = req.params.id;
+        // read file
         const freshCommentsList = JSON.parse(fs.readFileSync("./data/videos.json"))
         
         // Find the video
