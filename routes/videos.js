@@ -21,7 +21,7 @@ router.route("/")
             id: uuidv4(),
             title,
             channel:"channel",
-            image,
+            image:"https://project-2-api.herokuapp.com/images/image8.jpg",
             description,
             views: 0,
             likes: 0,
