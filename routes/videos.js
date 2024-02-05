@@ -1,7 +1,7 @@
 const express = require('express')
 const fs = require('fs')
 const router = express.Router();
-const videosData = require("../data/videos.json")
+const videosData = require("../data/videos.json");
 const { v4: uuidv4 } = require('uuid');
 
 // get all videos with data
@@ -12,16 +12,16 @@ router.route("/")
 
     // post video
     .post((req, res)=>{
-        const {title, image, description} = req.body;
+        const {title, description} = req.body;
 
-        if(!title || !description || !image) return res.status(400).json("Please input all video details!")
-
+        if(!title || !description) return res.status(400).json("Please input all video details!")
+        const imagePath = "/public/images/Upload-video-preview.jpg"
         // new video object
         const newVideo = {
             id: uuidv4(),
             title,
             channel:"channel",
-            image:"https://project-2-api.herokuapp.com/images/image8.jpg",
+            image: imagePath,
             description,
             views: 0,
             likes: 0,
@@ -34,7 +34,7 @@ router.route("/")
         videosList.push(newVideo)
 
         fs.writeFileSync("./data/videos.json", JSON.stringify(videosList))
-        res.status(201).json("video uploaded!")
+        res.status(201).json(newVideo)
     })
 
 
@@ -54,8 +54,8 @@ router.route("/:id/comments")
         const {name, comment} = req.body;
 
         if(!name || !comment) return res.status(400).json("Plese input comment")
-
         const videoId = req.params.id;
+
         // read file
         const freshCommentsList = JSON.parse(fs.readFileSync("./data/videos.json"))
         
@@ -78,8 +78,22 @@ router.route("/:id/comments")
 
         // putting the new comments to the file
         fs.writeFileSync("./data/videos.json", JSON.stringify(freshCommentsList))
-
         res.status(201).json(video)
     })  
 
+// put likes
+router.route("/:videoId/likes")
+    .put((req, res) => {
+        const { videoId } = req.params;
+        const video = videosData.find((video) => video.id === videoId);
+
+        if (!video) {
+            return res.status(404).json({ error: "Video not found" });
+        }
+
+        video.likes += 1;
+        fs.writeFileSync("./data/videos.json", JSON.stringify(videosData));
+        res.status(200).json({ message: "Liked successfully", likes: video.likes });
+    });
+    
 module.exports = router;
