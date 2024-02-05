@@ -15,7 +15,7 @@ router.route("/")
         const {title, description} = req.body;
 
         if(!title || !description) return res.status(400).json("Please input all video details!")
-        const imagePath = "/public/images/Upload-video-preview.jpg"
+        const imagePath = "/images/Upload-video-preview.jpg"
         // new video object
         const newVideo = {
             id: uuidv4(),

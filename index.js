@@ -3,11 +3,11 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 const videosRoute = require('./routes/videos')
-app.use('/public', express.static('public'));
 
 app.use(express.json())
 app.use(cors())
 
+app.use(express.static('./public'));
 // videosRoute
 app.use("/videos", videosRoute)
 
